@@ -1,3 +1,0 @@
-I AM KEVIN,
-
-HA HA HA
