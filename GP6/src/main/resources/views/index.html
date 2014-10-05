@@ -1,5 +1,5 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="utf-8">
     <title>denfinder</title>
@@ -51,18 +51,18 @@
           <p class="text-center housing-form-summary">
             Let's find a neighborhood that best matches your life stage and preferences. 
           </p>
-          <form action="#" th:action="@{/results}" th:object="${results}" method="post">
+          <form action="#" th:action="@{/results}" th:object="${df_results}">
             <div class="form-group">
               <label for="">
                 Preferred Location
               </label>
-              <input type="text" class="form-control" placeholder="City, state or zip code" />
+              <input type="text" class="form-control" placeholder="City, state or zip code" th:field="*{location}"/>
             </div>
             <div class="form-group">
               <label for="">
                 Income Range
               </label>
-              <select name="" id="" class="form-control">
+              <select name="" id="" class="form-control" th:field="*{income_range}">
                 <option value="0-25">Below $25K</option>
                 <option value="25-50">Above $25K</option>
                 <option value="50-75">Above $50K</option>
@@ -72,7 +72,7 @@
             </div>
             <div class="form-group">
               <label for="">Relationship Status</label>
-              <select name="" id="" class="form-control">
+              <select name="" id="" class="form-control" th:field="*{relationship_status}">
                 <option value="Single">Single</option>
                 <option value="Married">Married</option>
                 <option value="It's Complicated">It's Complicated</option>
@@ -80,29 +80,29 @@
             </div>
             <div class="form-group">
               <label for="">Age</label>
-              <select name="" id="" class="form-control">
-                <option value="">Teens</option>
-                <option value="">20's</option>
-                <option value="">30's</option>
-                <option value="">40's</option>
-                <option value="">50's</option>
-                <option value="">60's</option>
+              <select name="" id="" class="form-control" th:field="*{age}">
+                <option value="Teens">Teens</option>
+                <option value="20's">20's</option>
+                <option value="30's">30's</option>
+                <option value="40's">40's</option>
+                <option value="50's">50's</option>
+                <option value="60's">60's</option>
               </select>
             </div>
             <div class="form-group">
               <label for="">Preferred Community Type</label>
-              <select name="" id="" class="form-control">
-                <option value="">Suburban</option>
-                <option value="">City</option>
-                <option value="">Rural</option>
+              <select name="" id="" class="form-control" th:field="*{community_type}">
+                <option value="Suburban">Suburban</option>
+                <option value="City">City</option>
+                <option value="Rural">Rural</option>
               </select>
             </div>
             <div class="form-group">
               <label for="">Importance School System Quality</label>
-              <select name="" id="" class="form-control">
-                <option value="">Very Important</option>
-                <option value="">Somewhat Important</option>
-                <option value="">Not Very Important</option>
+              <select name="" id="" class="form-control" th:field="*{school_quality}">
+                <option value="Very Important">Very Important</option>
+                <option value="Somewhat Important">Somewhat Important</option>
+                <option value="Not Very Important">Not Very Important</option>
               </select>
             </div>
             <button type="submit" class="btn btn-primary btn-lg btn-block">Find Housing</button>

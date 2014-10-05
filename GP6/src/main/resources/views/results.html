@@ -1,111 +1,23 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Simple Map</title>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-    <meta charset="utf-8">
-    <style>
-      html, body, #map-canvas {
-        height: 100%;
-        margin: 0px;
-        padding: 0px
-      }
-    </style>
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
-    <script>
-var map;
-function initialize() {
-  var mapOptions = {
-    zoom: 8,
-    center: new google.maps.LatLng(-34.397, 150.644)
-  };
-  map = new google.maps.Map(document.getElementById('map-canvas'),
-      mapOptions);
-}
-
-google.maps.event.addDomListener(window, 'load', initialize);
-
-    </script>
+    <title>DenFinder Results</title>
   </head>
   <body>
-    <div id="map-canvas"></div>
-    <nav class="navbar navbar-default navbar-static-top navbar-map" role="navigation">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="/index.html">
-            <img class="logo-svg" src="/images/icon_23241_blue.svg">
-            <h3 class="logo-text">DenFinder</h3>
-          </a>
-        </div>
-      </div>
-    </nav>
+  	<h2>City, State matched: <p th:text="${city} + ', ' + ${state}" /> </h2>
+	<p th:text="'location: ' + ${df_results.location}" />
+	<p th:text="'income_range: ' + ${df_results.income_range}" />
+	<p th:text="'relationship_status: ' + ${df_results.relationship_status}" />
+	<p th:text="'age: ' + ${df_results.age}" />
+	<p th:text="'community type: ' + ${df_results.community_type}" />
+	<p th:text="'importance school system: ' + ${df_results.school_quality}" />
 
-    <div class="map-outer-container">
-      <div class="map-container">
-        <div class="panel panel-primary map-controls">
-          <div class="panel-heading">Neighborhood Qualities</div>
-          <div class="panel-body">
-            <form>
-              <div class="form-group">
-                <label for="">
-                  Preferred Location
-                </label>
-                <input type="text" class="form-control" placeholder="City, state or zip code" />
-              </div>
-              <div class="form-group">
-                <label for="">
-                  Income Range
-                </label>
-                <select name="" id="" class="form-control">
-                  <option value="0-25">Below $25K</option>
-                  <option value="25-50">Above $25K</option>
-                  <option value="50-75">Above $50K</option>
-                  <option value="75-100">Above $75K</option>
-                  <option value="100+">Above $100K</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="">Relationship Status</label>
-                <select name="" id="" class="form-control">
-                  <option value="Single">Single</option>
-                  <option value="Married">Married</option>
-                  <option value="It's Complicated">It's Complicated</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="">Age</label>
-                <select name="" id="" class="form-control">
-                  <option value="">Teens</option>
-                  <option value="">20's</option>
-                  <option value="">30's</option>
-                  <option value="">40's</option>
-                  <option value="">50's</option>
-                  <option value="">60's</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="">Preferred Community Type</label>
-                <select name="" id="" class="form-control">
-                  <option value="">Suburban</option>
-                  <option value="">City</option>
-                  <option value="">Rural</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="">Importance School System Quality</label>
-                <select name="" id="" class="form-control">
-                  <option value="">Very Important</option>
-                  <option value="">Somewhat Important</option>
-                  <option value="">Not Very Important</option>
-                </select>
-              </div>
-              <button type="submit" href="/map.html" class="btn btn-primary">Update</button>
-            </form>
-          </div>
-        </div>
-        <div class="map">
-        </div>
-      </div>  
-    </div>
+	<h3>Showing schools in a <span th:text="${distance}"></span>  mile radius from the given coordinates</h3>
+	<p th:text="'school data: ' + ${schools}" />
+	
+	<h3> Census data </h3>
+	<p th:text="'census data: ' + ${census_data}" />
+	
+	
   </body>
 </html>
