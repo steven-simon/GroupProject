@@ -16,15 +16,19 @@ import org.json.JSONObject;
 public class CensusData {
 	private final String lat;
 	private final String lon;
+	public final String state;
+	public final String county;
 	private final String fipsCode;
 	private final JSONObject fccData;
 
-	private final static int NUMOFDATA = 6;
+	private final static int NUMOFDATA = 8;
 	//NUMOFDATA = how many data is below this
-	public List<String> DP03_0079E = new ArrayList<String>();
-	public List<String> DP03_0055E = new ArrayList<String>(); //income from 25k to 35k
-	public List<String> DP03_0057E = new ArrayList<String>(); //income from 50k to 75k
-	public List<String> DP03_0058E = new ArrayList<String>(); //income from 75k to 100k
+	public List<Integer> DP02_0001E = new ArrayList<Integer>(); //# of households
+	public List<Integer> DP03_0054E = new ArrayList<Integer>(); //income from 25k to 35k
+	public List<Integer> DP03_0055E = new ArrayList<Integer>(); //income from 25k to 35k
+	public List<Integer> DP03_0056E = new ArrayList<Integer>(); //income from 25k to 35k
+	public List<Integer> DP03_0057E = new ArrayList<Integer>(); //income from 50k to 75k
+	public List<Integer> DP03_0058E = new ArrayList<Integer>(); //income from 75k to 100k
 	//public List<String> NAME = new ArrayList<String>();
 	public List<String> State = new ArrayList<String>();
 	public List<String> County = new ArrayList<String>();
@@ -51,11 +55,14 @@ public class CensusData {
 		fipsCode = fccData.getJSONObject("Block").getString("FIPS")
 				.substring(0, 5);
 
+		this.state = fipsCode.substring(0, 2);
+		this.county = fipsCode.substring(2, 5);
+		
 		URL census = new URL(
 				"http://api.census.gov/data/2012/acs5/profile?get="
 						// Categories options you want IN ORDER
-						+ "DP03_0079E,DP03_0055E,DP03_0057E,DP03_0058E" 
-						+ "&for=county:*&in=state:" + fipsCode.substring(0, 2)
+						+ "DP02_0001E,DP03_0054E,DP03_0055E,DP03_0056E,DP03_0057E,DP03_0058E" 
+						+ "&for=county:*&in=state:" + state
 						// + "+place="
 						// + fipsCode.substring(2, 4)
 						+ "&key=8a9b047b194a6ba728e926ffc57ba70536ef0377");
@@ -71,11 +78,14 @@ public class CensusData {
 		in.close();
 
 		generateDataSets(censusInputStr);
+		int index = County.indexOf(this.county);
+		System.out.println(DP03_0054E.get(index) + " " + DP03_0055E.get(index) + " " + DP03_0056E.get(index) + " " + DP03_0057E.get(index) + " " +DP03_0058E.get(index) + " " + DP02_0001E.get(index));
 	}
 
 	public String toString() {
-		return DP03_0079E.toString() + '\n'
+		return DP02_0001E.toString() + '\n'
 				+ DP03_0055E + '\n'
+				+ DP03_0056E + '\n'				
 				+ DP03_0057E + '\n'
 				+ DP03_0058E + '\n'
 				+ State + '\n'
@@ -83,7 +93,7 @@ public class CensusData {
 	}
 
 	private void generateDataSets(String censusInputStr) throws IOException {
-		censusInputStr = censusInputStr.replace("[", "").replace("]", "");// .replace(","," ").replace("\"","");
+		censusInputStr = censusInputStr.replace("[", "").replace("]", "").replace("\"", "");// .replace(","," ").replace("\"","");
 		
 		String[] tokens = censusInputStr.split(",\n*");
 		
@@ -100,30 +110,38 @@ public class CensusData {
 		 * throw new IOException("Unexcepted data or missing"); }
 		 */
 		for (int x = 0; x < NUMOFDATA;) {
-			if (!"DP03_0079E".equals(tokens[x++].replace("\"", ""))) {
+			if (!"DP02_0001E".equals(tokens[x++])) {
 				throw new IOException("Unexcepted data or missing");
 			}
-			if (!"DP03_0055E".equals(tokens[x++].replace("\"", ""))) {
+			if (!"DP03_0054E".equals(tokens[x++])) {
 				throw new IOException("Unexcepted data or missing");
 			}
-			if (!"DP03_0057E".equals(tokens[x++].replace("\"", ""))) {
+			if (!"DP03_0055E".equals(tokens[x++])) {
 				throw new IOException("Unexcepted data or missing");
 			}
-			if (!"DP03_0058E".equals(tokens[x++].replace("\"", ""))) {
+			if (!"DP03_0056E".equals(tokens[x++])) {
 				throw new IOException("Unexcepted data or missing");
 			}
-			if (!"state".equals(tokens[x++].replace("\"", ""))) {
+			if (!"DP03_0057E".equals(tokens[x++])) {
 				throw new IOException("Unexcepted data or missing");
 			}
-			if (!"county".equals(tokens[x++].replace("\"", ""))) {
+			if (!"DP03_0058E".equals(tokens[x++])) {
+				throw new IOException("Unexcepted data or missing");
+			}
+			if (!"state".equals(tokens[x++])) {
+				throw new IOException("Unexcepted data or missing");
+			}
+			if (!"county".equals(tokens[x++])) {
 				throw new IOException("Unexcepted data or missing");
 			}
 		}
 		for (int x = NUMOFDATA; x < tokens.length;) {
-			DP03_0079E.add(tokens[x++]);
-			DP03_0055E.add(tokens[x++]);
-			DP03_0057E.add(tokens[x++]);
-			DP03_0058E.add(tokens[x++]);
+			DP02_0001E.add(Integer.parseInt(tokens[x++]));
+			DP03_0054E.add(Integer.parseInt(tokens[x++]));
+			DP03_0055E.add(Integer.parseInt(tokens[x++]));
+			DP03_0056E.add(Integer.parseInt(tokens[x++]));
+			DP03_0057E.add(Integer.parseInt(tokens[x++]));
+			DP03_0058E.add(Integer.parseInt(tokens[x++]));
 			State.add(tokens[x++]);
 			County.add(tokens[x++]);
 		}
