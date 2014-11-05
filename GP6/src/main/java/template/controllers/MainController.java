@@ -58,52 +58,56 @@ public class MainController {
 		//Make new restTemplate
 		RestTemplate restTemplate = new RestTemplate();
 		
-		CensusData censusData = new CensusData(df_results.getLat(), df_results.getLong());
+		CensusData censusData = new CensusData(df_results.getLat(), df_results.getLong(), df_results);
 		
 		Algorithm algo = new Algorithm(censusData, df_results);
 		//Get the user's latitude and longitude coordinates
-//		String lat_coord = df_results.getLat();
-//		String long_coord = df_results.getLong();
+		String lat_coord = df_results.getLat();
+		String long_coord = df_results.getLong();
 //		
 //		//NOTE the education api key will not work on your computer because your IP address does not match mine
 //		//Visit education.com, hover over schools, click school data tools, then click request your api key
-//		final String education_api_key = "8fec7672ea965dfad023fe7817c8b778";
+		final String education_api_key = "a1356c1296cc1e77d643b98b893a9a98";
 //		
 //		//Can be used on any computer regardless of IP address
 //		final String usa_today_api_key = "5hm6295dpxcswae86wm3epym";
 //		
-//		//Signifies the distance radius for the education api to look for schools in
-//		final String distance = "3";
-//        
-//		//Build the education url using the latitude and longitude coordinates plus the distance
-//		String education_url = "http://api.education.com/service/service.php?f=schoolSearch&sn=sf&key=" + education_api_key + "&v=2&";
-//		education_url += "latitude=" + lat_coord + "&longitude=" + long_coord + "&distance=" + distance;
-//		
-//		//HTTP GET education data. Take all of that data and store it in the String named "education_html_source."
-//		//String "education_html_source" contains the HTML source of the education data page. System.out.println(e) if you don't understand
-//		String education_html_source = restTemplate.getForObject(education_url, String.class);
-//        
-//		//Split the HTML education page source by newlines and returns. Tokenizes into array
-//        String [] education_data = education_html_source.split("\\r?\\n");
-//        List<String> schools = new ArrayList<String>();
-//        
-//        //Loop through html source and add all data in between <name> and <string> tags
-//        //Add to schools array list
-//        for(String d : education_data)
-//        {
-//        	if(d.contains("<name>") || d.contains("<string>"))
-//        	{
-//        		d = d.replaceAll("<name>", "");
-//        		d = d.replace("</name>", "");
-//        		d = d.replaceAll("<string>", "");
-//        		d = d.replaceAll("</string>", "");
-//        		d = d.trim();
-//        		schools.add(d);	
+		//Signifies the distance radius for the education api to look for schools in
+		final String distance = "3";
+        
+		//Build the education url using the latitude and longitude coordinates plus the distance
+		String education_url = "http://api.education.com/service/service.php?f=schoolSearch&sn=sf&key=" + education_api_key + "&v=2&";
+		education_url += "latitude=" + lat_coord + "&longitude=" + long_coord + "&distance=" + distance;
+		
+		//HTTP GET education data. Take all of that data and store it in the String named "education_html_source."
+		//String "education_html_source" contains the HTML source of the education data page. System.out.println(e) if you don't understand
+		String education_html_source = restTemplate.getForObject(education_url, String.class);
+        
+		//Split the HTML education page source by newlines and returns. Tokenizes into array
+        String [] education_data = education_html_source.split("\\r?\\n");
+        List<String> schools = new ArrayList<String>();
+        
+        //Loop through html source and add all data in between <name> and <string> tags
+        //Add to schools array list
+        int q = 0;
+        for(String d : education_data)
+        {
+        	if(d.contains("<name>") || d.contains("<string>"))
+        	{
+        		d = d.replaceAll("<name>", "");
+        		d = d.replace("</name>", "");
+        		d = d.replaceAll("<string>", "");
+        		d = d.replaceAll("</string>", "");
+        		d = d.trim();
+        		schools.add(d);	
+        		q++;
+        	}
+//        	if(q == 5){
+//        		break;
 //        	}
-//        	
-//        }
-//        
-//        //Loop through "schools" to find the city and state name of the first school found for the given lat, long coordinates
+        	
+        }
+        //Loop through "schools" to find the city and state name of the first school found for the given lat, long coordinates
 //        int i = 0;
 //        while(!schools.get(i).equals("city"))
 //        {
@@ -119,9 +123,9 @@ public class MainController {
 //        }
 //        //Stores state postal name of first school found. Ex: TX
 //        String state = schools.get(i + 1);
-//        //Add schools to model so we can reference it in the view
-//        model.addAttribute("schools", schools);
-//        
+        //Add schools to model so we can reference it in the view
+        model.addAttribute("schools", schools);
+        
 //        //Build the census url for quering the usa today data base using the city name we parsed out of "schools"
 //        //Census api does not take lat, long pairs as parameters
 //        String census_url = "http://api.usatoday.com/open/census/loc?keypat=";
@@ -160,6 +164,12 @@ public class MainController {
 //        model.addAttribute("distance", distance);
 //        
 //        //Return the html page we wish to reference
+        model.addAttribute("incomeScore", algo.incomeScore);
+        model.addAttribute("relaScore", algo.relaScore);
+        model.addAttribute("ageScore", algo.ageScore);
+        model.addAttribute("commuMod", algo.commuMod);
+        model.addAttribute("totalScore", algo.totalScore);
+        
 		return "results";
 	}
 	

@@ -6,11 +6,12 @@
   <body>
   	<h2>City, State matched: <p th:text="${city} + ', ' + ${state}" /> </h2>
 	<p th:text="'location: ' + ${df_results.location}" />
-	<p th:text="'income_range: ' + ${df_results.income_range}" />
-	<p th:text="'relationship_status: ' + ${df_results.relationship_status}" />
-	<p th:text="'age: ' + ${df_results.age}" />
-	<p th:text="'community type: ' + ${df_results.community_type}" />
-	<p th:text="'importance school system: ' + ${df_results.school_quality}" />
+	<p th:text="'income_range: ' + ${df_results.income_range} + ' score: ' + ${incomeScore}" />
+	<p th:text="'relationship_status: ' + ${df_results.relationship_status} + ' score: ' + ${relaScore}" />
+	<p th:text="'age: ' + ${df_results.age} + ' score: ' + ${ageScore}" />
+	<p th:text="'community type: ' + ${df_results.community_type} + ' score: ' + ${commuMod}" />
+	<p th:text="'importance school system: ' + ${df_results.school_quality} " />
+	<p th:text="'total score: ' + ${totalScore} " />
 
 	<h3>Showing schools in a <span th:text="${distance}"></span>  mile radius from the given coordinates</h3>
 	<p th:text="'school data: ' + ${schools}" />

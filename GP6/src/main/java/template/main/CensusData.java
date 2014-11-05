@@ -6,12 +6,15 @@ package template.main;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONObject;
+
+import template.objects.DenFinder;
 
 public class CensusData {
 	private final String lat;
@@ -21,21 +24,30 @@ public class CensusData {
 	private final String fipsCode;
 	private final JSONObject fccData;
 
-	private final static int NUMOFDATA = 8;
+	private DenFinder denfinder = null;
+	
+	private final static int NUMOFDATA = 10;
 	//NUMOFDATA = how many data is below this
 	public List<Integer> DP02_0001E = new ArrayList<Integer>(); //# of households
-	public List<Integer> DP03_0054E = new ArrayList<Integer>(); //income from 25k to 35k
+	public List<Integer> DP03_0052E = new ArrayList<Integer>(); //income from 0 to 10k
+	public List<Integer> DP03_0053E = new ArrayList<Integer>(); //income from 10k to 15k
+	public List<Integer> DP03_0054E = new ArrayList<Integer>(); //income from 15k to 25k
 	public List<Integer> DP03_0055E = new ArrayList<Integer>(); //income from 25k to 35k
-	public List<Integer> DP03_0056E = new ArrayList<Integer>(); //income from 25k to 35k
+	public List<Integer> DP03_0056E = new ArrayList<Integer>(); //income from 35k to 50k
 	public List<Integer> DP03_0057E = new ArrayList<Integer>(); //income from 50k to 75k
 	public List<Integer> DP03_0058E = new ArrayList<Integer>(); //income from 75k to 100k
+	public List<Integer> TotalRelationship = new ArrayList<Integer>();
+	public List<Integer> Relationship = new ArrayList<Integer>();
+	public List<Integer> TotalAge = new ArrayList<Integer>();
+	public List<Integer> Age = new ArrayList<Integer>();
 	//public List<String> NAME = new ArrayList<String>();
 	public List<String> State = new ArrayList<String>();
 	public List<String> County = new ArrayList<String>();
 
-	public CensusData(String lat, String lon) throws IOException {
+	public CensusData(String lat, String lon, DenFinder denfinder) throws IOException {
 		this.lat = lat;
 		this.lon = lon;
+		this.denfinder = denfinder;
 
 		URL fcc = new URL(
 				"http://data.fcc.gov/api/block/find?format=json&latitude="
@@ -61,7 +73,7 @@ public class CensusData {
 		URL census = new URL(
 				"http://api.census.gov/data/2012/acs5/profile?get="
 						// Categories options you want IN ORDER
-						+ "DP02_0001E,DP03_0054E,DP03_0055E,DP03_0056E,DP03_0057E,DP03_0058E" 
+						+ "DP02_0001E,DP03_0052E,DP03_0053E,DP03_0054E,DP03_0055E,DP03_0056E,DP03_0057E,DP03_0058E" 
 						+ "&for=county:*&in=state:" + state
 						// + "+place="
 						// + fipsCode.substring(2, 4)
@@ -76,10 +88,11 @@ public class CensusData {
 			censusInputStr = censusInputStr + (char) censusCharIn;
 		}
 		in.close();
+		
 
 		generateDataSets(censusInputStr);
-		int index = County.indexOf(this.county);
-		System.out.println(DP03_0054E.get(index) + " " + DP03_0055E.get(index) + " " + DP03_0056E.get(index) + " " + DP03_0057E.get(index) + " " +DP03_0058E.get(index) + " " + DP02_0001E.get(index));
+		generateRelationShip();
+		generateAge();
 	}
 
 	public String toString() {
@@ -113,6 +126,12 @@ public class CensusData {
 			if (!"DP02_0001E".equals(tokens[x++])) {
 				throw new IOException("Unexcepted data or missing");
 			}
+			if (!"DP03_0052E".equals(tokens[x++])) {
+				throw new IOException("Unexcepted data or missing");
+			}
+			if (!"DP03_0053E".equals(tokens[x++])) {
+				throw new IOException("Unexcepted data or missing");
+			}
 			if (!"DP03_0054E".equals(tokens[x++])) {
 				throw new IOException("Unexcepted data or missing");
 			}
@@ -137,6 +156,8 @@ public class CensusData {
 		}
 		for (int x = NUMOFDATA; x < tokens.length;) {
 			DP02_0001E.add(Integer.parseInt(tokens[x++]));
+			DP03_0052E.add(Integer.parseInt(tokens[x++]));
+			DP03_0053E.add(Integer.parseInt(tokens[x++]));
 			DP03_0054E.add(Integer.parseInt(tokens[x++]));
 			DP03_0055E.add(Integer.parseInt(tokens[x++]));
 			DP03_0056E.add(Integer.parseInt(tokens[x++]));
@@ -147,7 +168,59 @@ public class CensusData {
 		}
 	}
 
-	public static void main(String[] args) throws IOException {
-		System.out.println(new CensusData("32.7758", "-96.7967"));
+	public void generateRelationShip() throws IOException{
+		URL census = new URL(
+				"http://api.census.gov/data/2012/acs5/profile?get="
+						+ "DP02_0024E," + denfinder.getRelationship_status() 
+						+ "&for=county:*&in=state:" + state
+						+ "&key=8a9b047b194a6ba728e926ffc57ba70536ef0377");
+		URLConnection censusConnection = census.openConnection();
+		BufferedReader in = new BufferedReader(new InputStreamReader(
+				censusConnection.getInputStream()));
+		String censusInputStr = "";
+		int censusCharIn = 0;
+		while (censusCharIn != -1) {
+			censusCharIn = in.read();
+			censusInputStr = censusInputStr + (char) censusCharIn;
+		}
+		in.close();
+		
+		censusInputStr = censusInputStr.replace("[", "").replace("]", "").replace("\"", "");
+		String[] tokens = censusInputStr.split(",\n*");
+		for (int x = 4; x < tokens.length;) {
+			TotalRelationship.add(Integer.parseInt(tokens[x++]));
+			Relationship.add(Integer.parseInt(tokens[x++]));
+			x += 2;
+		}
 	}
+		
+	public void generateAge() throws IOException{
+		URL census = new URL(
+				"http://api.census.gov/data/2012/acs5/profile?get="
+						+ "DP05_0001E," + denfinder.getAge() 
+						+ "&for=county:*&in=state:" + state
+						+ "&key=8a9b047b194a6ba728e926ffc57ba70536ef0377");
+		URLConnection censusConnection = census.openConnection();
+		BufferedReader in = new BufferedReader(new InputStreamReader(
+				censusConnection.getInputStream()));
+		String censusInputStr = "";
+		int censusCharIn = 0;
+		while (censusCharIn != -1) {
+			censusCharIn = in.read();
+			censusInputStr = censusInputStr + (char) censusCharIn;
+		}
+		in.close();
+		
+		censusInputStr = censusInputStr.replace("[", "").replace("]", "").replace("\"", "");
+		String[] tokens = censusInputStr.split(",\n*");
+		for (int x = 4; x < tokens.length;) {
+			TotalAge.add(Integer.parseInt(tokens[x++]));
+			Age.add(Integer.parseInt(tokens[x++]));
+			x += 2;
+		}
+	}
+//	
+//	public static void main(String[] args) throws IOException {
+//		System.out.println(new CensusData("32.7758", "-96.7967", "DP02_0025E"));
+//	}
 }
