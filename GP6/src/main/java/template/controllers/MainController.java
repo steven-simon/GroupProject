@@ -49,11 +49,13 @@ public class MainController {
 	 * @return
 	 * @throws Exception 
 	 */
-	@RequestMapping(value = "/results")
+	@RequestMapping(value = "/heatmap")
 	public String createDenSelect(@ModelAttribute DenFinder df_results, Model model) throws Exception
 	{
 		//Add df_results to the view so that the view can reference df_results using the name "df_results"
 		model.addAttribute("df_results", df_results);
+		model.addAttribute("lat", df_results.getLat());
+		model.addAttribute("long", df_results.getLong());
 		
 		//Make new restTemplate
 		RestTemplate restTemplate = new RestTemplate();
@@ -164,13 +166,13 @@ public class MainController {
 //        model.addAttribute("distance", distance);
 //        
 //        //Return the html page we wish to reference
-        model.addAttribute("incomeScore", algo.incomeScore);
-        model.addAttribute("relaScore", algo.relaScore);
-        model.addAttribute("ageScore", algo.ageScore);
-        model.addAttribute("commuMod", algo.commuMod);
-        model.addAttribute("totalScore", algo.totalScore);
+        model.addAttribute("incomeScore", algo.allIncScore);
+        model.addAttribute("relaScore", algo.allRelScore);
+        model.addAttribute("ageScore", algo.allAgeScore);
+        model.addAttribute("commuMod", algo.allComScore);
+        model.addAttribute("totalScore", algo.allTotScore);
         
-		return "results";
+		return "heatmap";
 	}
 	
 }

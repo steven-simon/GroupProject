@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Heatmaps</title>
+    <style>
+      /* to have the map be displayed as large as possible */
+      html, body, #map-canvas {
+        height: 100%;
+        margin: 0px;
+        padding: 0px
+      }
+    </style>
+	<div th:with="lat=${lat}">
+      <p th:text="${lat} + ' ' + ${long}" />
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,visualization" ></script>
+    <script th:inline="javascript">
+
+var map, pointarray, heatmap;
+
+ /*<![CDATA[*/
+
+    var lat = /*[[${lat}]]*/;
+    var long = /*[[${long}]]*/;
+
+
+/*]]>*/
+
+// a shortened version of the data for Google's taxi example
+var taxiData = [
+  {location: new google.maps.LatLng(lat, long), weight: 10},
+  {location: new google.maps.LatLng(lat, long+10), weight: 0.5}
+  
+  // ...
+];
+
+ 
+function initialize() {
+  // the map's options
+  var mapOptions = {
+    zoom: 13,
+    center: new google.maps.LatLng(lat, long),
+    mapTypeId: google.maps.MapTypeId.SATELLITE
+  };
+ 
+  // the map and where to place it
+  map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+ 
+  //var pointArray = new google.maps.MVCArray(taxiData);
+ 
+  // what data for the heatmap and how to display it
+  heatmap = new google.maps.visualization.HeatmapLayer({
+    data: taxiData,
+    radius: 50
+  });
+ 
+  // placing the heatmap on the map
+  heatmap.setMap(map);
+}
+ 
+// as soon as the document is ready the map is initialized
+google.maps.event.addDomListener(window, 'load', initialize);
+ 
+    </script>
+  </head>
+ 
+  <body>
+    <!-- this is where the map finally is drawn onto -->
+    <div id="map-canvas"></div>
+  </body>
+</html>
